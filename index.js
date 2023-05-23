@@ -28,6 +28,7 @@ const port = process.env.PORT || 8000
 
 
 const allowedOrigins = [
+  process.env.LOCAL_ORIGIN,
   process.env.APP_ORIGIN,
   process.env.APP_ORIGIN_SECOND,
 ];
