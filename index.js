@@ -17,10 +17,12 @@ const GET_USER_RANKS = "lol/league/v4/entries/by-summoner/";
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.apiKey = process.env.API_KEY;
-  next();
-});
+// app.use((req, res, next) => {
+//   API_KEY = process.env.API_KEY;
+//   next();
+// });
+
+const API_KEY = process.env.API_KEY
 
 const port = process.env.PORT || 8000
 
@@ -49,7 +51,7 @@ app.get("/api/user/:summonerName", async (req, res) => {
     const response = await axios.get(
       `${BASE_URL_API}${GET_USER_BY_NAME}${summonerName}`,
       {
-        headers: { "X-Riot-Token": req.apiKey },
+        headers: { "X-Riot-Token": API_KEY },
       }
     );
     res.json(response.data);
@@ -65,7 +67,7 @@ app.get("/api/userranks/:summonerId", async (req, res) => {
     const response = await axios.get(
       `${BASE_URL_API}${GET_USER_RANKS}${summonerId}`,
       {
-        headers: { "X-Riot-Token": req.apiKey },
+        headers: { "X-Riot-Token": API_KEY },
       }
     );
     res.json(response.data);
@@ -81,7 +83,7 @@ app.get("/api/mostplayedchamps/:summonerId", async (req, res) => {
     const response = await axios.get(
       `${BASE_URL_API}${GET_CHAMPION_MASTERIES}${summonerId}`,
       {
-        headers: { "X-Riot-Token": req.apiKey },
+        headers: { "X-Riot-Token": API_KEY },
       }
     );
     res.json(response.data);
@@ -97,7 +99,7 @@ app.get("/api/matchids/:puuid", async (req, res) => {
     const response = await axios.get(
       `${BASE_URL_API}${GET_MATCHES_BY_PUUID}${puuid}/ids`,
       {
-        headers: { "X-Riot-Token": req.apiKey },
+        headers: { "X-Riot-Token": API_KEY },
         params: {
           start: 0,
           count: 10,
@@ -117,7 +119,7 @@ app.get("/api/match/:matchId", async (req, res) => {
     console.log(matchId);
     const response = await axios.get(`https://europe.api.riotgames.com/${GET_MATCH_BY_ID}${matchId}`,
       {
-        headers: { "X-Riot-Token": req.apiKey },
+        headers: { "X-Riot-Token": API_KEY },
       }
     );
     res.json(response.data);
@@ -133,7 +135,7 @@ app.get("/api/match-timeline/:matchId", async (req, res) => {
     console.log(matchId);
     const response = await axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/${matchId}/timeline`,
       {
-        headers: { "X-Riot-Token": req.apiKey },
+        headers: { "X-Riot-Token": API_KEY },
       }
     );
     res.json(response.data);
@@ -169,7 +171,7 @@ app.get("/api/challengerleague/:que/:league", async (req, res) => {
     const que = req.params.que;
     const league = req.params.league;
     const response = await axios.get(`https://eun1.api.riotgames.com/lol/league/v4/${league}leagues/by-queue/${que}`,
-      {headers: { 'X-Riot-Token': req.apiKey }}
+      {headers: { 'X-Riot-Token': API_KEY }}
     );
     res.json(response.data.entries);
   } catch (error) {
@@ -184,12 +186,12 @@ app.get("/api/playerlivegame/:summonerId", async (req, res) => {
     const response = await axios.get(
       `${BASE_URL_API}${GET_PLAYER_LIVE_GAME}${summonerId}`,
       {
-        headers: { "X-Riot-Token": req.apiKey },
+        headers: { "X-Riot-Token": API_KEY },
       }
     );
     res.json(response.data);
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(404).json({ error: "Summoner not in game" });
   }
 });
@@ -212,7 +214,7 @@ app.get('/api/matchids/:puuid', async (req, res) => {
       const { start, count } = req.query;
   
       const matchIdsResponse = await axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids`, {
-        headers: { 'X-Riot-Token': req.apiKey },
+        headers: { 'X-Riot-Token': API_KEY },
         params: {
           start: start || 0,
           count: count || 10,
@@ -223,7 +225,7 @@ app.get('/api/matchids/:puuid', async (req, res) => {
   
       const matches = await Promise.all(matchIds.map(async (matchId) => {
         const matchResponse = await axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/${matchId}`, {
-          headers: { 'X-Riot-Token': req.apiKey },
+          headers: { 'X-Riot-Token': API_KEY },
         });
         return matchResponse.data;
       }));
@@ -236,32 +238,33 @@ app.get('/api/matchids/:puuid', async (req, res) => {
   });
 
 app.get('/api/fetchalldata/:summonerName', async (req, res) => {
+  console.log(req)
     try {
       const summonerName = req.params.summonerName;
   
       const userResponse = await axios.get(`${BASE_URL_API}${GET_USER_BY_NAME}${summonerName}`, {
-        headers: { 'X-Riot-Token': req.apiKey },
+        headers: { 'X-Riot-Token': API_KEY },
       });
       const user = userResponse.data;
   
       const ranksResponse = await axios.get(`${BASE_URL_API}${GET_USER_RANKS}${user.id}`, {
-        headers: { 'X-Riot-Token': req.apiKey },
+        headers: { 'X-Riot-Token': API_KEY },
       });
       const ranks = ranksResponse.data;
   
       const champsResponse = await axios.get(`${BASE_URL_API}lol/champion-mastery/v4/champion-masteries/by-summoner/${user.id}/top`, {
-        headers: { 'X-Riot-Token': req.apiKey },
+        headers: { 'X-Riot-Token': API_KEY },
       });
       const champs = champsResponse.data;
   
       const matchIdsResponse = await axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${user.puuid}/ids?start=0&count=10`, {
-        headers: { 'X-Riot-Token': req.apiKey },
+        headers: { 'X-Riot-Token': API_KEY },
       });
       const matchIds = matchIdsResponse.data;
   
       const matches = await Promise.all(matchIds.map(async (matchId) => {
         const matchResponse = await axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/${matchId}`, {
-          headers: { 'X-Riot-Token': req.apiKey },
+          headers: { 'X-Riot-Token': API_KEY },
         });
         return matchResponse.data;
       }));
