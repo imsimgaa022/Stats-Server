@@ -24,7 +24,24 @@ app.use((req, res, next) => {
 
 const port = process.env.PORT || 8000
 
-app.use(cors());
+
+const allowedOrigins = [
+  process.env.LOCAL_ORIGIN,
+  process.env.APP_ORIGIN,
+  process.env.APP_ORIGIN_SECOND,
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
+app.use(cors(corsOptions));
 
 app.get("/api/user/:summonerName", async (req, res) => {
   try {
