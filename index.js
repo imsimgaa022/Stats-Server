@@ -239,31 +239,26 @@ app.get('/api/fetchalldata/:summonerName', async (req, res) => {
     try {
       const summonerName = req.params.summonerName;
   
-      // Get user data
       const userResponse = await axios.get(`${BASE_URL_API}${GET_USER_BY_NAME}${summonerName}`, {
         headers: { 'X-Riot-Token': req.apiKey },
       });
       const user = userResponse.data;
   
-      // Get user ranks
       const ranksResponse = await axios.get(`${BASE_URL_API}${GET_USER_RANKS}${user.id}`, {
         headers: { 'X-Riot-Token': req.apiKey },
       });
       const ranks = ranksResponse.data;
   
-      // Get most played champions
       const champsResponse = await axios.get(`${BASE_URL_API}lol/champion-mastery/v4/champion-masteries/by-summoner/${user.id}/top`, {
         headers: { 'X-Riot-Token': req.apiKey },
       });
       const champs = champsResponse.data;
   
-      // Get match IDs by PUUID
       const matchIdsResponse = await axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${user.puuid}/ids?start=0&count=10`, {
         headers: { 'X-Riot-Token': req.apiKey },
       });
       const matchIds = matchIdsResponse.data;
   
-      // Get match data for each match ID
       const matches = await Promise.all(matchIds.map(async (matchId) => {
         const matchResponse = await axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/${matchId}`, {
           headers: { 'X-Riot-Token': req.apiKey },
@@ -284,7 +279,6 @@ app.get('/api/fetchalldata/:summonerName', async (req, res) => {
   });
   
 
-// Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
