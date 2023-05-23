@@ -40,7 +40,7 @@ const corsOptions = {
     }
   },
 };
-
+//cors
 app.use(cors(corsOptions));
 
 app.get("/api/user/:summonerName", async (req, res) => {
