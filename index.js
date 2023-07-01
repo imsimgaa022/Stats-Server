@@ -7,20 +7,13 @@ require('dotenv').config();
 const GET_MATCHES_BY_PUUID = "lol/match/v5/matches/by-puuid/";
 const GET_MATCH_BY_ID = "lol/match/v5/matches/";
 const GET_CHAMPION_MASTERIES = "lol/champion-mastery/v4/champion-masteries/by-summoner/";
-const GET_ITEM_DATA = "https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/item.json";
 const GET_PATCH_VERSION = "https://ddragon.leagueoflegends.com/api/versions.json";
 const GET_PLAYER_LIVE_GAME = "lol/spectator/v4/active-games/by-summoner/";
-const GET_SUMMONER_SPELLS = "https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/summoner.json";
 const BASE_URL_API = "https://eun1.api.riotgames.com/";
 const GET_USER_BY_NAME = "lol/summoner/v4/summoners/by-name/";
 const GET_USER_RANKS = "lol/league/v4/entries/by-summoner/";
 
 app.use(express.json());
-
-// app.use((req, res, next) => {
-//   API_KEY = process.env.API_KEY;
-//   next();
-// });
 
 const API_KEY = process.env.API_KEY
 
@@ -145,9 +138,10 @@ app.get("/api/match-timeline/:matchId", async (req, res) => {
   }
 });
 
-app.get("/api/itemdata", async (req, res) => {
+app.get("/api/itemdata/:version", async (req, res) => {
   try {
-    const response = await axios.get(GET_ITEM_DATA);
+    const version = req.params.version;
+    const response = await axios.get(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`);
     res.json(response.data);
   } catch (error) {
     console.error(error);
@@ -167,7 +161,6 @@ app.get("/api/patchversion", async (req, res) => {
 
 app.get("/api/challengerleague/:que/:league", async (req, res) => {
   try {
-      console.log('usao ovde?')
     const que = req.params.que;
     const league = req.params.league;
     const response = await axios.get(`https://eun1.api.riotgames.com/lol/league/v4/${league}leagues/by-queue/${que}`,
@@ -199,8 +192,7 @@ app.get("/api/playerlivegame/:summonerId", async (req, res) => {
 app.get("/api/summonerspells/:version", async (req, res) => {
   try {
     const version = req.params.version;
-    const url = GET_SUMMONER_SPELLS.replace("{version}", version);
-    const response = await axios.get(url);
+    const response = await axios.get(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/summoner.json`);
     res.json(response.data.data);
   } catch (error) {
     console.error(error);
